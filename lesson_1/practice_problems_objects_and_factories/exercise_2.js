@@ -1,0 +1,1 @@
+// Yes there's a lot of unnecessary code. The code is repetitive and can be kept much simpler by refactoring it using a factory function
