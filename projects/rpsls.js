@@ -1,79 +1,5 @@
 const readline = require('readline-sync');
 
-function createPlayer() {
-  return {
-    score: 0,
-    move: null,
-    moveHistory: {},
-  };
-}
-
-function createHuman() {
-  let playerObject = createPlayer();
-
-  let humanObject = {
-    choose() {
-      let choice;
-
-      while (true) {
-        console.log('Please choose 1) rock, 2) paper, 3) scissors, 4) lizard or 5) spock');
-        choice = readline.question().toLowerCase();
-        switch (choice) {
-          case '1':
-          case 'r':
-            choice = 'rock';
-            break;
-          case '2':
-          case 'p':
-            choice = 'paper';
-            break;
-          case '3':
-            choice = 'scissors';
-            break;
-          case '4':
-          case 'l':
-            choice = 'lizard';
-            break;
-          case '5':
-            choice = 'spock';
-            break;
-          case 's':
-            console.log('please choose between 1) scissors and 2) spock');
-            while (true) {
-              choice = readline.question().toLowerCase();
-              if (['1', '2', 'scissors', 'spock'].includes(choice)) break;
-              console.log('Sorry, invalid choice');
-            }
-            if (choice === '1') {
-              choice = 'scissors';
-            } else choice = 'spock';
-        }
-        if (RPSGame.moves.includes(choice)) break;
-        console.log('Sorry, invalid choice.');
-      }
-
-      this.move = choice;
-    },
-  };
-
-  return Object.assign(playerObject, humanObject);
-}
-
-function createComputer() {
-  let playerObject = createPlayer();
-
-  let computerObject = {
-    choose() {
-      const choices = RPSGame.moves;
-      let randomIndex = Math.floor(Math.random() * choices.length);
-      this.move = choices[randomIndex];
-    },
-  };
-
-  return Object.assign(playerObject, computerObject);
-}
-
-
 const RPSGame = {
   moves: ['rock', 'paper', 'scissors', 'lizard', 'spock'],
   winningScore: null,
@@ -97,7 +23,7 @@ const RPSGame = {
   displayWinner() {
     let humanMove = this.human.move;
     let computerMove = this.computer.move;
-    console.clear();
+    // console.clear();
 
     this.displayScores();
 
@@ -106,11 +32,13 @@ const RPSGame = {
 
     if (this.checkUserWins(humanMove, computerMove)) {
       this.human.score++;
+      this.computer.moveHistory.totalLosses++;
       if (this.human.score !== this.winningScore) console.log('You won the round!\n');
     } else if (humanMove === computerMove) {
       console.log("It's a tie");
     } else {
       this.computer.score++;
+      this.human.moveHistory.totalLosses++;
       if (this.computer.score !== this.winningScore) console.log('Computer won the round!\n');
     }
   },
@@ -205,19 +133,42 @@ const RPSGame = {
     }
   },
 
-  addMoveHistory() {
-    let humanMoveHistory = this.human.moveHistory;
-    let computerMoveHistory = this.computer.moveHistory;
+  updateMoveHistory() {
+    let moveHistory = this.computer.moveHistory;
+    let movesLossCount = moveHistory.movesLossCount;
+    let movesLossPercent = moveHistory.movesLossPercent;
+    let totalLosses = moveHistory.totalLosses;
+    let computerMove = this.computer.move;
+    let humanMove = this.human.move;
+
+    if (this.checkUserWins(humanMove, computerMove)) {
+      movesLossCount[computerMove] += 1;
+      for (let move in movesLossCount) {
+        movesLossPercent[move] = movesLossCount[move] / totalLosses;
+      }
+    }
+    moveHistory.moveToSkip = null;
+    for (let move in movesLossPercent) {
+      if (movesLossPercent[move] >= 0.6) moveHistory.moveToSkip = move;
+    }
+    this.updateHumanMoveHistory();
+  },
+
+  updateHumanMoveHistory() {
+    let moveHistory = this.human.moveHistory;
+    let movesLossCount = moveHistory.movesLossCount;
+    let movesLossPercent = moveHistory.movesLossPercent;
+    let totalLosses = moveHistory.totalLosses;
     let humanMove = this.human.move;
     let computerMove = this.computer.move;
 
-    if (humanMoveHistory.hasOwnProperty(humanMove)) {
-      humanMoveHistory[humanMove] += 1;
-    } else humanMoveHistory[humanMove] = 1;
-
-    if (computerMoveHistory.hasOwnProperty(computerMove)) {
-      computerMoveHistory[computerMove] += 1;
-    } else computerMoveHistory[computerMove] = 1;
+    if ((humanMove !== computerMove) &&
+        (!this.checkUserWins(humanMove, computerMove))) {
+      movesLossCount[humanMove] += 1;
+      for (let move in movesLossCount) {
+        movesLossPercent[move] = movesLossCount[move] / totalLosses;
+      }
+    }
   },
 
   play() {
@@ -226,12 +177,12 @@ const RPSGame = {
 
     while (true) {
       while (true) {
-        console.clear();
+        // console.clear();
         this.displayScores();
         this.human.choose();
         this.computer.choose();
-        this.addMoveHistory();
         this.displayWinner();
+        this.updateMoveHistory();
         this.displayGrandWinner();
         if (this.grandWinner !== null) break;
         if (!this.continueGame()) break;
@@ -243,5 +194,90 @@ const RPSGame = {
     this.displayGoodbyeMessage();
   },
 };
+
+function createPlayer() {
+  return {
+    score: 0,
+    move: null,
+    moveHistory: {
+      movesLossCount: {rock: 0, paper: 0, scissors: 0, lizard: 0, spock: 0},
+      movesLossPercent: {rock: 0, paper: 0, scissors: 0, lizard: 0, spock: 0},
+      totalLosses: 0,
+      moveToSkip: null}
+  };
+}
+
+function createHuman() {
+  let playerObject = createPlayer();
+
+  let humanObject = {
+    choose() {
+      let choice;
+
+      while (true) {
+        console.log('Please choose 1) rock, 2) paper, 3) scissors, 4) lizard or 5) spock');
+        choice = readline.question().toLowerCase();
+        switch (choice) {
+          case '1':
+          case 'r':
+            choice = 'rock';
+            break;
+          case '2':
+          case 'p':
+            choice = 'paper';
+            break;
+          case '3':
+            choice = 'scissors';
+            break;
+          case '4':
+          case 'l':
+            choice = 'lizard';
+            break;
+          case '5':
+            choice = 'spock';
+            break;
+          case 's':
+            console.log('please choose between 1) scissors and 2) spock');
+            while (true) {
+              choice = readline.question().toLowerCase();
+              if (['1', '2', 'scissors', 'spock'].includes(choice)) break;
+              console.log('Sorry, invalid choice');
+            }
+            if (choice === '1') {
+              choice = 'scissors';
+            } else choice = 'spock';
+        }
+        if (RPSGame.moves.includes(choice)) break;
+        console.log('Sorry, invalid choice.');
+      }
+
+      this.move = choice;
+    },
+  };
+
+  return Object.assign(playerObject, humanObject);
+}
+
+function createComputer() {
+  let playerObject = createPlayer();
+
+  let computerObject = {
+    choose() {
+      const choices = RPSGame.moves;
+      let randomIndex = Math.floor(Math.random() * choices.length);
+      let moveToSkip = RPSGame.computer.moveHistory.moveToSkip;
+
+      this.move = choices[randomIndex];
+      while (true) {
+        console.log(`computermove : ${this.move}`);
+        if (this.move !== moveToSkip) break;
+        randomIndex = Math.floor(Math.random() * choices.length);
+        this.move = choices[randomIndex];
+      }
+    },
+  };
+
+  return Object.assign(playerObject, computerObject);
+}
 
 RPSGame.play();
