@@ -1,0 +1,1 @@
+// The first and second step is similar to exercise 1. But on line three we create a property on the object baz with a key of baz and value of 2. Therefore, when we use baz.foo on line 3 it collects the value of baz inside of the object itself before it even checks the prototype. 2 + 1 = 3 which is the output.

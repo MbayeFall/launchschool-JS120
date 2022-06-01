@@ -1,0 +1,1 @@
+// line 2 creates an empty object as a value of baz. However creating the object this way means qux is a prototype of baz. Therefore baz.foo on line 3 refers to the value 1, so does qux.foo. 1 + 1 results in 2 which is the output.

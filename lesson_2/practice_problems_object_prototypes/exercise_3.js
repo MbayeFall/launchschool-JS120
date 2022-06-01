@@ -1,0 +1,1 @@
+// First two lines similar to exercise 1 once again. This time however we reassign the value of foo in the prototype itself. When we try to run baz.foo on line 5 it first checks the property of foo inside of the object baz. Since it can't find it it then checks if the property is present on the prototype. In this case it is (2). 2 + 2 = 4 which is the output.

@@ -1,0 +1,1 @@
+// You can create an object without a prototype by defining its prototype as null.
