@@ -1,0 +1,1 @@
+// The method is passed as an argument of logReturnVal on line 16. The execution context of the method is then lost for that reason and the this keyword points to the global object. Therefore the output is undefined undefined is a undefined

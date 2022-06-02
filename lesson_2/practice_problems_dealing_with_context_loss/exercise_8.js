@@ -1,0 +1,1 @@
+// The value of the property a in the foo object will remain 0. The function on line 4 is referencing the global object. Therefore The value of the property in foo is not affected.
