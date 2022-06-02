@@ -23,7 +23,7 @@ const RPSGame = {
   displayWinner() {
     let humanMove = this.human.move;
     let computerMove = this.computer.move;
-    // console.clear();
+    console.clear();
 
     this.displayScores();
 
@@ -177,7 +177,7 @@ const RPSGame = {
 
     while (true) {
       while (true) {
-        // console.clear();
+        console.clear();
         this.displayScores();
         this.human.choose();
         this.computer.choose();
@@ -269,7 +269,6 @@ function createComputer() {
 
       this.move = choices[randomIndex];
       while (true) {
-        console.log(`computermove : ${this.move}`);
         if (this.move !== moveToSkip) break;
         randomIndex = Math.floor(Math.random() * choices.length);
         this.move = choices[randomIndex];
