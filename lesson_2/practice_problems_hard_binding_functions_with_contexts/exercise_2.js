@@ -1,0 +1,1 @@
+// It will log nothing. The bind method was used on the function but the function itself is not invoked
