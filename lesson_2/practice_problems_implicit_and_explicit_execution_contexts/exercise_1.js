@@ -1,0 +1,1 @@
+// The following code would return the global or window object. The default execution context inside of a function when there's no object is the global object.

@@ -1,0 +1,1 @@
+// In this situation, when the function is called on line 7, it is called using the obj method and the default execution context in this situation is the object the obj variable is pointing to. 
