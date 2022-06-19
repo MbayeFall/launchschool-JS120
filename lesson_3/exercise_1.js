@@ -1,2 +1,0 @@
-// Every object that is created from the factory function will contain new properties and methods. This can place a load on memory.
-// Also there's no way of checking if an object was created using a paritcular factory function or not. Making the type of the object harder to identify sometimes. 
